@@ -1,171 +1,151 @@
-# MVP Software Defined Air Quality Monitor - Requirements Specification
+# Social Role-Based Air Quality Monitor
 
-## Project Overview
+## Overview
 
-Build a minimum viable prototype of a software-defined air quality monitoring system using pylua-bioxen-vm for distributed Lua VM orchestration. The system should demonstrate real-time sensor data processing, aggregation, and monitoring through a Python command-line interface.
+This project explores how AI agents can develop intelligent behavior through **social role adoption** rather than traditional programming approaches. Using air quality monitoring as a practical demonstration domain, we create a distributed system where autonomous agents take on workplace roles - Field Technicians, Data Analyst, and Operations Supervisor - and develop competencies through social interaction patterns.
 
-## Architecture Requirements
+Built with `pylua-bioxen-vm` for distributed Lua VM orchestration, this system demonstrates how agents with defined social roles can exhibit natural collaborative behaviors, error recovery, and adaptive learning that emerges from role-based identity rather than explicit programming.
+
+## Conceptual Framework
+
+### Social Roles as Intelligence Scaffolding
+
+Rather than programming intelligence from scratch, this system bootstraps AI behavior through established social structures that humans intuitively understand:
+
+- **Field Technicians** (Sensor Node VMs) develop domain expertise, maintain professional standards, and coordinate with peers
+- **Data Analyst** (Gateway VM) synthesizes information, maintains quality standards, and provides analytical insights  
+- **Operations Supervisor** (Python Control Center) manages resources, coordinates responses, and interfaces with stakeholders
+
+Each role comes with natural affordances, responsibility boundaries, communication patterns, and performance expectations that shape intelligent behavior.
+
+### Why Social Roles?
+
+Social roles provide:
+- **Built-in competencies** - Agents know what constitutes good performance in their domain
+- **Communication protocols** - Natural patterns for reporting, escalation, and coordination
+- **Learning scaffolding** - Agents develop expertise by observing role-appropriate behaviors
+- **Error recovery** - Social structures provide natural fallback patterns for handling failures
+- **Interpretable behavior** - Actions make sense within familiar workplace dynamics
+
+## System Architecture
+
+### Agent Roles and Responsibilities
+
+| Role | Agent | Core Competencies | Social Behaviors |
+|------|-------|------------------|------------------|
+| **Field Technician** | Sensor Node VMs | Air quality measurement expertise<br>Data validation skills<br>Equipment monitoring | Professional pride in data quality<br>Peer collaboration for validation<br>Escalation awareness for anomalies |
+| **Data Analyst** | Gateway VM | Statistical analysis<br>Pattern recognition<br>Quality assurance | Analytical objectivity<br>Synthesis across data sources<br>Clear communication to management |
+| **Operations Supervisor** | Python Control Center | System management<br>Resource allocation<br>Stakeholder communication | Leadership responsibility<br>Team coordination<br>Decision authority |
+
+### Communication as Social Interaction
+
+Rather than simple data transfer, agents engage in workplace communication patterns:
+
+- **Regular Reporting** - Field Technicians provide structured updates to the Data Analyst
+- **Exception Escalation** - Anomalies trigger appropriate alert chains up the hierarchy  
+- **Peer Coordination** - Technicians collaborate on cross-validation and calibration
+- **Management Queries** - Supervisor requests status updates and performance summaries
+- **Stakeholder Interface** - Supervisor translates technical information for human users
+
+## Technical Implementation
 
 ### System Components
-- **2 Sensor Node VMs** (Lua processes) - Generate and process mock air quality data
-- **1 Data Gateway VM** (Lua process) - Aggregate sensor data and calculate metrics
-- **1 Python Control Center** - Orchestrate VMs and provide user interface
+- **2 Field Technician VMs** (Lua processes) - Generate and validate air quality sensor data
+- **1 Data Analyst VM** (Lua process) - Aggregate data and calculate analytical metrics
+- **1 Operations Supervisor** (Python process) - Orchestrate system and provide user interface
 
-### Communication Pattern
-- Sensor VMs connect to Gateway VM using client-server socket communication
-- Gateway VM acts as central data aggregation point
-- Python control center manages VM lifecycle and queries data from Gateway
+### Role-Based Data Flow
+1. **Field Technicians** generate realistic sensor readings (PM2.5, PM10, temperature, humidity) with professional-quality validation
+2. **Data Analyst** receives reports, performs quality assurance, calculates derived metrics (AQI), and maintains system-wide statistics
+3. **Operations Supervisor** monitors all agents, provides human interface, and coordinates system responses
 
-## Functional Requirements
+### Communication Protocols
+- Field Technicians → Data Analyst: Regular data reports via socket connections
+- Data Analyst → Operations Supervisor: On-demand status and analytical summaries
+- Operations Supervisor ↔ All Agents: Lifecycle management and coordination commands
 
-### Python Control Center
-**Primary Functions:**
-- Initialize and manage VM lifecycle using pylua-bioxen-vm VMManager
-- Provide interactive command-line menu system using questionary library
-- Display real-time air quality data in formatted console output
-- Monitor system health and VM status
-- Allow user to start/stop monitoring processes
-- View real-time status with rich
+## Research Questions
 
-**Menu System Requirements:**
-- Main menu with options: View Current Data, System Status, Start/Stop Monitoring, Exit
-- Real-time data display with formatted metrics (PM2.5, PM10, temperature, humidity)
-- System status showing VM health, communication status, and active sensors
-- Graceful shutdown of all VMs on exit
+This system investigates:
 
-### Sensor Node VMs (Lua)
-**Data Generation:**
-- Generate realistic mock air quality sensor readings every 3-5 seconds
-- Include measurements: PM2.5, PM10, temperature, humidity
-- Add realistic variation/noise to simulate real sensor behavior
-- Include sensor health status and data quality indicators
+- **Emergent Collaboration** - Do agents with social roles naturally develop better coordination than programmed interactions?
+- **Adaptive Learning** - Can agents improve their role performance through social observation and feedback?
+- **Error Recovery** - Do social structures provide more robust failure handling than technical error management?
+- **Scalability** - How easily can new agents adopt existing roles or create new ones?
+- **Interpretability** - Are socially-structured agent behaviors more understandable and debuggable?
 
-**Data Processing:**
-- Apply basic data validation (range checking, outlier detection)
-- Format data into standardized message structure with timestamp and sensor ID
-- Handle connection failures and retry logic
-- Transmit processed data to Gateway VM via socket communication
-
-### Gateway VM (Lua)
-**Data Aggregation:**
-- Receive data from multiple sensor VMs simultaneously
-- Store latest readings from each sensor node
-- Calculate real-time averages across all active sensors
-- Track sensor health and connectivity status
-
-**Analytics:**
-- Calculate simplified Air Quality Index (AQI) based on PM2.5 levels
-- Detect basic patterns or anomalies in readings
-- Maintain running statistics (min, max, average)
-- Provide data export functionality for Python queries
-
-## Technical Requirements
+## Quick Start
 
 ### Dependencies
-- Python 3.7+ with pylua-bioxen-vm library installed
-- questionary library for interactive CLI menus
-- Lua 5.3+ with LuaSocket extension
-- JSON handling capability in Lua (lua-cjson or equivalent)
+```bash
+pip install pylua-bioxen-vm questionary rich
+# Lua 5.3+ with LuaSocket and lua-cjson
+```
 
-### Data Format Specifications
-**Sensor Message Structure:**
-- Sensor ID (string identifier)
-- Timestamp (Unix timestamp)
-- Measurements object with PM2.5, PM10, temperature, humidity values
-- Status indicators (calibrated, validated, confidence level)
-- Data quality flags
+### Launch System
+```bash
+python control_center.py
+```
 
-**Gateway Response Structure:**
-- Aggregated averages for all measurements
-- Individual sensor readings
-- Active sensor count and health status
-- Air quality index calculation
-- Last update timestamp
+The Operations Supervisor will initialize all Field Technician and Data Analyst agents, establish communication channels, and provide an interactive menu for system monitoring.
 
-### Performance Requirements
-- Support concurrent operation of 3 VMs (2 sensors + 1 gateway)
-- Data latency under 1 second from sensor to display
-- Stable operation for extended periods (hours)
-- Graceful handling of VM failures or communication issues
+### Monitoring Agent Behavior
 
-## User Experience Requirements
-
-### Command Line Interface
-- Clear, intuitive menu navigation using questionary
-- Real-time data display with appropriate units and formatting
-- Color coding for different air quality levels (good/moderate/unhealthy)
-- System status indicators showing VM health and communication status
-- Responsive interface that updates without blocking user interaction
-
-### Data Display
-- Formatted tables showing current sensor readings
-- Historical context (trend indicators, previous readings)
-- Clear air quality interpretation (AQI level descriptions)
-- Sensor-specific status information
-- System performance metrics (uptime, message count, error rates)
-
-## Testing and Validation Criteria
-
-### System Integration
-- All VMs start successfully and establish network connections
-- Sensor data flows from generators through gateway to Python interface
-- Menu system responds correctly to all user inputs
-- System handles VM restarts and network interruptions gracefully
-
-### Data Accuracy
-- Mock sensor data falls within realistic ranges for air quality measurements
-- Aggregation calculations produce mathematically correct averages
-- AQI calculations follow standard air quality index formulas
-- Timestamps and data sequencing remain consistent across VMs
-
-### Reliability Requirements
-- System runs continuously for at least 30 minutes without crashes
-- Handles network disconnections and VM communication failures
-- Provides clear error messages for troubleshooting
-- Allows clean shutdown without leaving orphaned processes
-
-## Success Metrics
-
-### Demonstration Goals
-- **Process Isolation**: Show independent VM operation with fault tolerance
-- **Network Communication**: Demonstrate socket-based VM-to-VM messaging
-- **Real-time Processing**: Display live data updates from distributed sources
-- **Orchestration**: Showcase Python control of multiple Lua VMs
-- **Scalability**: Easy to add additional sensor VMs
-
-### Learning Outcomes
-- Understanding of pylua-bioxen-vm architecture and capabilities
-- Experience with distributed system design patterns
-- Knowledge of real-time data processing and aggregation
-- Familiarity with Lua networking and JSON handling
-- CLI application development with Python
+The interface provides insight into:
+- **Role Performance** - How well each agent fulfills their role expectations
+- **Social Coordination** - Communication patterns and collaborative behaviors
+- **Adaptive Responses** - How agents handle exceptions and changing conditions
+- **System Health** - Overall coordination and performance metrics
 
 ## Development Phases
 
-### Phase 1: Core Infrastructure (Day 1-2)
-- Set up Python VM manager with basic VM creation
-- Implement simple Lua scripts for sensor and gateway
-- Establish basic socket communication between VMs
-- Create minimal questionary-based menu system
+### Phase 1: Social Role Foundation
+- Establish basic role identities and competencies for each agent type
+- Implement natural communication patterns between roles
+- Create role-appropriate decision making and error handling
 
-### Phase 2: Data Processing (Day 3-4)  
-- Add realistic sensor data generation with proper variation
-- Implement data validation and error handling in Lua VMs
-- Create aggregation logic in gateway VM
-- Add formatted data display in Python interface
+### Phase 2: Collaborative Behaviors
+- Add peer coordination between Field Technicians
+- Implement adaptive quality standards in Data Analyst role
+- Create responsive management behaviors in Operations Supervisor
 
-### Phase 3: Polish and Testing (Day 5)
-- Add comprehensive error handling and logging
-- Implement graceful shutdown and cleanup
-- Create user documentation and setup instructions
-- Test system reliability and performance
+### Phase 3: Emergent Intelligence
+- Observe and enhance naturally developing agent behaviors
+- Add role-based learning and adaptation mechanisms
+- Document emergent collaborative patterns and error recovery strategies
 
-## Expected Deliverables
+## Success Metrics
 
-1. **Source Code Package** with all Python and Lua scripts
-2. **Setup Instructions** for dependencies and configuration
-3. **User Guide** for operating the CLI interface
-4. **Technical Documentation** explaining VM architecture and communication
-5. **Demo Script** showing key features and capabilities
+### Social Coordination Indicators
+- **Role Clarity** - Agents operate within appropriate authority boundaries
+- **Natural Communication** - Interactions follow recognizable workplace patterns
+- **Collaborative Problem Solving** - Agents coordinate effectively on complex tasks
+- **Adaptive Learning** - Role performance improves through social interaction
 
-This MVP will serve as a compelling demonstration of pylua-bioxen-vm's capabilities for distributed real-time data processing applications.
+### Technical Performance Goals
+- Stable concurrent operation of all agents
+- Sub-second data latency from sensors to human interface
+- Graceful handling of agent failures and network issues
+- Intuitive human interaction through Operations Supervisor role
+
+## Research Applications
+
+This system serves as a platform for investigating:
+- **Social Intelligence** - How social structures bootstrap intelligent behavior
+- **Multi-Agent Coordination** - Natural patterns for distributed problem solving
+- **Adaptive Systems** - Learning and improvement through role-based interaction
+- **Human-AI Collaboration** - Intuitive interfaces based on familiar social roles
+
+The air quality monitoring domain provides concrete, measurable tasks while the social role framework offers a pathway toward more natural and interpretable AI systems.
+
+## Contributing
+
+This project explores fundamental questions about intelligence, social interaction, and distributed systems. We welcome contributions that:
+- Enhance role-based agent behaviors and competencies
+- Add new social roles or communication patterns
+- Improve adaptive learning and error recovery mechanisms
+- Document emergent behaviors and collaboration patterns
+
+## License
+
+MIT License - This research platform is open for experimentation and extension.
